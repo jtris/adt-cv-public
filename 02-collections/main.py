@@ -18,6 +18,7 @@ class Student:
     name: str
     os_cislo: str
 
+
 def get_unique_subjects(data: list[tuple[str, str, str]]) -> set[str]:
     """
     Vrátí množinu unikátních předmětů.
@@ -30,6 +31,7 @@ def get_unique_subjects(data: list[tuple[str, str, str]]) -> set[str]:
 
     return set(subjects)
 
+
 def group_students_by_subject(data: list[tuple[str, str, str]]) -> dict[str, list[Student]]:
     """
     Vrátí slovník, kde klíčem je předmět a hodnotou seznam studentů (instancí třídy Student),
@@ -37,24 +39,19 @@ def group_students_by_subject(data: list[tuple[str, str, str]]) -> dict[str, lis
     """
 
     subjects = get_unique_subjects(raw_data)
-    students_by_subject = [[] for i in range(len(subjects))]
 
-    for line in raw_data:
-        name = line[0]
-        stnum = line[1]
-        subj = line[2]
+    # init groups dict
+    groups = {}
+    for subject in subjects:
+        groups[subject] = []
 
-        print(f'n:{name} stn:{stnum} subj:{subj}')
-        subj_index = list(subjects).index(subj)
-        st = Student(name, stnum)
-        students_by_subject[subj_index].append(st)
+    for entry in data:
+        subject = entry[2]
+        student = Student(entry[0], entry[1])
+        groups[subject].append(student)
+    
+    return groups
 
-    print(students_by_subject)
-
-
-
-
-    return {} # PLACEHOLDER
 
 def get_unique_students(data: list[tuple[str, str, str]]) -> set[Student]:
     """
@@ -62,7 +59,12 @@ def get_unique_students(data: list[tuple[str, str, str]]) -> set[Student]:
     Pozor: Data obsahují duplicity (jeden student může mít více předmětů).
     Cílem je získat množinu fyzických osob.
     """
-    return set() # PLACEHOLDER
+    students = []
+    for entry in data:
+        students.append(Student(entry[0], entry[1]))
+    
+    return set(students) # PLACEHOLDER
+
 
 def main() -> None:
     print("--- ÚKOL 1: Unikátní předměty ---")
@@ -88,6 +90,7 @@ def main() -> None:
     else:
         print(f"\n[CHYBA] Očekáváno {expected_count} studentů, nalezeno {len(unique_students)}.")
         print("Tip: Funguje správně porovnávání instancí třídy Student v množině?")
+
 
 if __name__ == "__main__":
     main()
