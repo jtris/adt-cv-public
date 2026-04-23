@@ -7,23 +7,31 @@
 
 import json
 from queue import PriorityQueue
+from collections import defaultdict
 
 import adthelpers
 
 
 class Graph:
     def __init__(self) -> None:
-        self.edges: dict[int, list[tuple[float, int]]] = {}
+        # self.edges: dict[int, list[tuple[float, int]]] = {}
+        self.edges: dict[int, list[tuple[float, int]]] = defaultdict(list)
 
     def add_edge(self, src: int, dst: int, weight: float = 0) -> None:
-        # TODO 1 napište kód přidání hrany do datové struktury grafu
-        pass
+        # přidání hrany do datové struktury grafu
+        self.edges[src].append((weight, dst))
+        self.edges[dst].append((weight, src))
 
 
 def load_graph(filename: str) -> Graph:
-    graph = Graph()
 
-    # TODO 2 vytvořte graf podle dat ze souboru
+    with open(filename, 'r') as f:
+        json_data = json.load(f)
+
+    # vytvořit graf podle dat ze souboru
+    graph = Graph()
+    for edge in json_data['links']:
+        graph.add_edge(src=edge['source'], dst=edge['target'], weight=edge['weight'])
 
     return graph
 
