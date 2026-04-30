@@ -8,8 +8,20 @@
 import json
 from queue import PriorityQueue
 from collections import defaultdict
+from dataclasses import dataclass, field
 
 import adthelpers
+
+
+@dataclass(order=True)
+class PriorityEdge:
+    priority: int
+    edge: tuple[int, int] = field(compare=False)
+
+    def __getitem__(self, key): # zavedení indexování
+        if key > 1:
+            raise IndexError("PriorityEdge only has two fields: edge and priority")
+        return self.edge if key == 1 else self.priority
 
 
 class Graph:
@@ -47,10 +59,28 @@ def spanning_tree(graph: Graph) -> None:
         closed=closed,
         color_edges=sp_tree,
     )
-    painter.draw_graph()
 
-    # TODO 3 Implementujte Prim-Jarníkův algoritmus pro nalezení minimální kostry
+    # prim-jarnik
+    queue.put(PriorityEdge(0, (0, 0))) # začátek ve vrcholu s indexem 0
+    print(queue.queue)
 
+    while not queue.empty():
+        current_edge = queue.get()
+        dst = current_edge.edge[1]
+
+        if dst in closed:
+            continue
+        closed.add(dst)
+        sp_tree.append(current_edge.edge)
+
+        for edge in graph.edges[dst]:
+            if edge[1] not in closed:
+                queue.put(PriorityEdge(int(edge[0]), (dst, edge[1])))
+
+        # breakpoint zde pro procházení algoritmu
+        painter.draw_graph(dst)
+
+    # print(sp_tree[1:])
 
 def main() -> None:
     graph = load_graph("10-spanning-tree/data/graph_grid_s3_3.json")
